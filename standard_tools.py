@@ -9,21 +9,30 @@ __date__ = 'Dec 1, 2015'
 
 import os
 
+import smtplib
+
+from email.mime.text import MIMEText
+
+from monty.serialization import loadfn
+
+CREDS = loadfn(os.path.join(os.path.expanduser('~'), 'dbauth.yaml'))
+
 
 def listdirs(excluded=[]):
     """
     Returns a list of all subdirectories in the current working directory.
     """
-    dirs = [d for d in os.listdir(os.getcwd()) if os.path.isdir(d) and 
+    dirs = [d for d in os.listdir(os.getcwd()) if os.path.isdir(d) and
             d not in excluded]
     return dirs
+
 
 def write_runjob(name, nnodes, nprocessors, pmem, walltime, command):
     """
     Write a general queue submission script for Hipergator. Very similar to the
     write_runjob in vasp_tools, but does not assume the use of a vasp binary.
     """
-    runjob=open("runjob","w")
+    runjob = open("runjob", "w")
     runjob.write("#!/bin/sh\n")
     runjob.write("#PBS -N %s\n" % name)
     runjob.write("#PBS -o test.out\n")
