@@ -11,6 +11,7 @@ __date__ = 'Dec 1, 2015'
 
 import os
 from monty.serialization import loadfn
+from pymatgen.core.periodic_table import Element
 
 
 UFILE = loadfn(os.path.join(os.path.expanduser('~'), 'software/U_values.yaml'))
@@ -39,7 +40,7 @@ def multiply_lattice_parameter(value):
 def direct_to_cartesian(inputcar, outputcar):
     """
     This function converts a direct POSCAR (inputcar) to a
-    cartesian POSCAR (outputcar).
+    cartesian POSCAR (outputcar)   
     """
     with open(inputcar, 'r') as direct_poscar:
         direct_poscar_lines = direct_poscar.readlines()
@@ -59,17 +60,15 @@ def direct_to_cartesian(inputcar, outputcar):
         direct_atom_lines.append(direct_poscar_lines[i+8].split())
         cartesian_atom_coordinates = []
         for j in range(3):
-            cartesian_atom_coordinates.append(float(direct_atom_lines[i][j])
-                                              * float(lattice_parameter)*(float(a_vector[j])
-                                                                          + float(b_vector[j])
-                                                                          + float(c_vector[j])))
-
+            cartesian_atom_coordinates.append(float(direct_atom_lines[i][j])\
+                *float(lattice_parameter)*(float(a_vector[j])\
+                + float(b_vector[j]) + float(c_vector[j])))
         cartesian_atom_lines.append(cartesian_atom_coordinates)
 
     with open(outputcar, 'w') as cartesian_poscar:
         cartesian_poscar.write('%s' % name)
         cartesian_poscar.write('%s' % lattice_parameter)
-        cartesian_poscar.write('%s %s %s\n' % (a_vector[0], a_vector[1],
+        cartesian_poscar.write('%s %s %s\n' % (a_vector[0], a_vector[1], 
                                                a_vector[2]))
         cartesian_poscar.write('%s %s %s\n' % (b_vector[0], b_vector[1],
                                                b_vector[2]))
@@ -148,7 +147,7 @@ def add_vacuum(delta, cut=0.9):
     n_atoms = 0
     for item in stoichiometry:
         n_atoms += int(item)
-    final_atom_line = n_atoms + 8
+    final_atom_line = n_atoms + 8 
 
     # Elongate c-vector by delta
 
@@ -209,9 +208,9 @@ def write_potcar(types='None'):
     """
     Writes a POTCAR file based on a list of types.
 
-    types = list of same length as number of elements containing specifications
-    for the kind of potential desired for each element. If no special potential
-    is desired, just enter 'regular', or leave types = 'None'.
+    types = list of same length as number of elements containing specifications 
+    for the kind of potential desired for each element. If no special potential 
+    is desired, just enter 'regular', or leave types = 'None'. 
     (["pv", "regular", "3"])
     """
     poscar = open("POSCAR", "r")
@@ -231,7 +230,7 @@ def write_potcar(types='None'):
             elements[i] += "_%s" % types[i]
 
         # If specified pseudopotential doesn't exist, try other variations.
-        if os.path.exists("/home/mashton/Potentials/POT_GGA_PAW_PBE/%s/POTCAR"
+        if os.path.exists("/home/mashton/Potentials/POT_GGA_PAW_PBE/%s/POTCAR"\
                           % elements[i]):
             pass
         else:
@@ -243,49 +242,46 @@ def write_potcar(types='None'):
                 length = len(types[i]) + 1
                 elements[i] = elements[i][:-length]
             elements[i] += "_sv"
-            if os.path.exists("/home/mashton/Potentials/POT_GGA_PAW_PBE/%s/"
+            if os.path.exists("/home/mashton/Potentials/POT_GGA_PAW_PBE/%s/"\
                               "POTCAR" % elements[i]):
-                print "Found one! %s will work." % elements[i]
+                print "Found one! %s will work." % elements[i] 
             else:
                 elements[i] = elements[i][:-3]
                 elements[i] += "_pv"
-                if os.path.exists("/home/mashton/Potentials/POT_GGA_PAW_PBE/%s"
+                if os.path.exists("/home/mashton/Potentials/POT_GGA_PAW_PBE/%s"\
                                   "/POTCAR" % elements[i]):
                     print "Found one! %s will work." % elements[i]
                 else:
                     elements[i] = elements[i][:-3]
                     elements[i] += "_3"
-                    if os.path.exists(
-                        "/home/mashton/Potentials/"
-                            "POT_GGA_PAW_PBE/%s/POTCAR" % elements[i]):
-                        print "Found one! %s will work." % elements[i]
+                    if os.path.exists("/home/mashton/Potentials/"\
+                                    "POT_GGA_PAW_PBE/%s/POTCAR" % elements[i]):
+                        print "Found one! %s will work." % elements[i] 
                     else:
                         elements[i] = elements[i][:-2]
-                        if os.path.exists(
-                            "/home/mashton/Potentials/"
-                                "POT_GGA_PAW_PBE/%s/POTCAR" % elements[i]):
-
+                        if os.path.exists("/home/mashton/Potentials/"\
+                                    "POT_GGA_PAW_PBE/%s/POTCAR" % elements[i]):
                             print "Found one! %s will work." % elements[i]
                         else:
                             print "I give up looking for a pseudopotential for"\
-                                " %s. Do it yourself." % elements[i]
+                                  " %s. Do it yourself." % elements[i]
 
     # Create paths, open files, and write files to POTCAR for each potential.
     for element in elements:
-        potentials.append("/home/mashton/Potentials/POT_GGA_PAW_PBE/%s/POTCAR"
+        potentials.append("/home/mashton/Potentials/POT_GGA_PAW_PBE/%s/POTCAR"\
                           % element)
     outfile = open("POTCAR", "w")
     for potential in potentials:
         infile = open(potential)
         for line in infile:
-            outfile.write(line)
+            outfile.write(line)    
         infile.close()
     outfile.close()
 
 
 def write_runjob(name, nnodes, nprocessors, pmem, walltime, binary):
     """
-    writes a runjob based on a name, nnodes, nprocessors, walltime, and binary.
+    writes a runjob based on a name, nnodes, nprocessors, walltime, and binary. 
     Designed for runjobs on the Hennig group_list on HiperGator.
     """
     runjob = open("runjob", "w")
@@ -348,19 +344,19 @@ def get_polarization():
             break
     total_polarization = []
     for i in range(3):
-        total_polarization.append(
-            (float(electronic_polarization[i]) + float(ionic_polarization[i]))
-            * 1602.0 * float(vector_lengths[i]) / cell_volume)
+        total_polarization.append((float(electronic_polarization[i])\
+            + float(ionic_polarization[i])) * 1602.0 * float(vector_lengths[i])\
+            / cell_volume)
         while total_polarization[i] > 1602.0 * float(vector_lengths[i])\
-                / cell_volume:
+            / cell_volume:
             total_polarization[i] -= 1602.0 * float(vector_lengths[i])\
                 / cell_volume
         while total_polarization[i] < -1602.0 * float(vector_lengths[i])\
-                / cell_volume:
+            / cell_volume:
             total_polarization[i] += 1602.0 * float(vector_lengths[i])\
                 / cell_volume
     return total_polarization
-
+    
 
 def get_toten():
     """
@@ -406,10 +402,10 @@ def multiply_poscar(poscar, dimensions):
         original_atomic_coordinates.append(original_element_coordinates)
     new_stoichiometries = []
     for i in range(len(stoichiometries)):
-        new_stoichiometries.append(str(int(stoichiometries[i])
-                                   * int(multiply_factor)))
+        new_stoichiometries.append(str(int(stoichiometries[i])\
+            * int(multiply_factor)))
 
-    # Multiply 'a' vector by the first dimension, divide all atomic coordinates
+    # Multiply 'a' vector by the first dimension, divide all atomic coordinates 
     # by the first dimension, then replicate the structure.
     new_a_vector = []
     for i in range(3):
@@ -421,10 +417,8 @@ def multiply_poscar(poscar, dimensions):
         for j in range(0, dimensions[0]):
             for k in range(len(original_atomic_coordinates[i])):
                 new_coordinates = []
-                new_x = str(
-                    float(original_atomic_coordinates[i][k][0])
+                new_x = str(float(original_atomic_coordinates[i][k][0])\
                     / float(dimensions[0]) + float(j) / float(dimensions[0]))
-
                 new_y = str(original_atomic_coordinates[i][k][1])
                 new_z = str(original_atomic_coordinates[i][k][2])
                 new_coordinates.append(new_x)
@@ -434,7 +428,8 @@ def multiply_poscar(poscar, dimensions):
 
         new_atomic_coordinates.append(new_element_coordinates)
 
-    # Multiply 'b' vector by the second dimension, divide all atomic coordinates
+
+    # Multiply 'b' vector by the second dimension, divide all atomic coordinates 
     # by the first dimension, then replicate the structure.
     new_b_vector = []
     for i in range(3):
@@ -447,10 +442,8 @@ def multiply_poscar(poscar, dimensions):
             for k in range(len(new_atomic_coordinates[i])):
                 new_coordinates = []
                 new_x = str(new_atomic_coordinates[i][k][0])
-                new_y = str(
-                    float(new_atomic_coordinates[i][k][1])
+                new_y = str(float(new_atomic_coordinates[i][k][1])\
                     / float(dimensions[1]) + float(j) / float(dimensions[1]))
-
                 new_z = str(new_atomic_coordinates[i][k][2])
                 new_coordinates.append(new_x)
                 new_coordinates.append(new_y)
@@ -459,8 +452,9 @@ def multiply_poscar(poscar, dimensions):
 
         newer_atomic_coordinates.append(new_element_coordinates)
 
-    # Multiply 'c' vector by the third dimension, divide all atomic coordinates
-    # by the third dimension, then replicate the structure.
+
+    # Multiply 'c' vector by the third dimension, divide all atomic coordinates by 
+    # the third dimension, then replicate the structure.
     new_c_vector = []
     for i in range(3):
         new_c_vector.append(str(float(c_vector[i]) * float(dimensions[2])))
@@ -473,10 +467,8 @@ def multiply_poscar(poscar, dimensions):
                 new_coordinates = []
                 new_x = str(newer_atomic_coordinates[i][k][0])
                 new_y = str(newer_atomic_coordinates[i][k][1])
-                new_z = str(
-                    float(newer_atomic_coordinates[i][k][2])
+                new_z = str(float(newer_atomic_coordinates[i][k][2])\
                     / float(dimensions[2]) + float(j) / float(dimensions[2]))
-
                 new_coordinates.append(new_x)
                 new_coordinates.append(new_y)
                 new_coordinates.append(new_z)
@@ -549,9 +541,9 @@ def get_u_values(atoms):
                 "Eu": "5.4", "Tm": "6.0", "Yb": "6.3", "Lu": "3.8", "U": "4.0"}
     d_elements = ["Sc", "Ti", "V", "Cr", "Mn", "Fe", "Co", "Ni", "Cu", "Zn",
                   "Ga", "Nb", "Y", "Zr", "Nb", "Mo", "Tc", "Ru", "Rh", "Pd",
-                  "Ag", "Cd", "In", "Hf", "Ta", "W", "Re", "Os", "Ir", "Pt",
+                  "Ag", "Cd", "In", "Hf", "Ta", "W", "Re", "Os", "Ir", "Pt", 
                   "Au"]
-    f_elements = ["La", "Ce", "Pr", "Nd", "Pm", "Sm", "Eu", "Gd", "Tb", "Dy",
+    f_elements = ["La", "Ce", "Pr", "Nd", "Pm", "Sm", "Eu", "Gd", "Tb", "Dy", 
                   "Ho", "Er", "Tm", "Yb", "Lu", "U"]
 
     for atom in atoms:
@@ -599,7 +591,7 @@ def get_n_formula_units():
         else:
             n_formula_units = i
             break
-
+            
     return n_formula_units
 
 
@@ -617,9 +609,26 @@ def get_spacing(filename='POSCAR', cutoff=0.95):
         if z_coord > cutoff:
             z_coord -= 1
         z_coords.append(z_coord)
-    max_height = max([z_coordinate for z_coordinate in z_coords])
-    min_height = min([z_coordinate for z_coordinate in z_coords])
+    max_height = max([z_coord for z_coord in z_coords])
+    min_height = min([z_coord for z_coord in z_coords])
     spacing = ((1.0 + min_height) - max_height) * float(c_axis[2])\
         * float(lattice_parameter[0])
 
     return spacing
+
+def get_starting_magmoms():
+    """
+    Returns the 'MAGMOM:'' setting based on the POSCAR as a string object.
+    Transition metals get 6.0, all others get 0.5.
+    """
+    poscar_lines = open('POSCAR').readlines()
+    elements = [Element(elt) for elt in poscar_lines[5].split()]
+    stoichs = poscar_lines[6].split()
+    magmoms = list()
+    for i in range(len(elements)):
+        if elements[i].is_transition_metal:
+            magmoms.append('{}*6.0'.format(stoichs[i]))
+        else:
+            magmoms.append('{}*0.5'.format(stoichs[i]))
+
+    return ' '.join(magmoms)
