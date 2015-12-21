@@ -1,7 +1,7 @@
 """
-Suite of commonly used tools for vasp calculations. These tools either cannot be
-found in pymatgen, or I thought the implementation in pymatgen could be
-improved.
+Suite of commonly used tools for vasp calculations. These tools either
+cannot be found in pymatgen, or I thought the implementation in pymatgen
+could be improved.
 """
 
 __author__ = 'Michael Ashton'
@@ -92,7 +92,8 @@ def add_vacuum(delta, cut=0.9):
     Adds vacuum to a POSCAR.
 
     delta = vacuum thickness in Angstroms
-    cut = height above which atoms will need to be fixed. Defaults to 0.9.
+    cut = height above which atoms will need to be fixed. Defaults to
+    0.9.
     """
     # Fix the POSCAR to put bottom atoms (if they are accidentally above
     # tolerance) at 0.0.
@@ -157,17 +158,16 @@ def add_vacuum(delta, cut=0.9):
     c_lat_par[2] = c_length_plus_delta / float(lattice_constant)
     scalar = c_lat_par[2] / save
 
-    # Create list of atom coordinates and adjust their z-coordinate on the fly
-
+    # Create list of atom coordinates and adjust their z-coordinate on
+    # the fly
     atoms = []
     for i in range(8, final_atom_line):
         atom = oldlines[i].split()
         atom[2] = float(atom[2]) / scalar
         atoms.append(atom)
 
-    # Write updated values to new_POSCAR, copy it to old_POSCAR, then close
-    # files and delete new_POSCAR
-
+    # Write updated values to new_POSCAR, copy it to old_POSCAR, then
+    # close files and delete new_POSCAR
     new_poscar.write("%s plus %s\n" % (name, str(delta)))
     new_poscar.write("%s\n" % lattice_constant)
     for item in a_lat_par:
@@ -208,10 +208,10 @@ def write_potcar(types='None'):
     """
     Writes a POTCAR file based on a list of types.
 
-    types = list of same length as number of elements containing specifications 
-    for the kind of potential desired for each element. If no special potential 
-    is desired, just enter 'regular', or leave types = 'None'. 
-    (["pv", "regular", "3"])
+    types = list of same length as number of elements containing
+    specifications for the kind of potential desired for each element.
+    If no special potential is desired, just enter 'regular', or leave
+    types = 'None'. (["pv", "regular", "3"])
     """
     poscar = open("POSCAR", "r")
     lines = poscar.readlines()
@@ -229,7 +229,8 @@ def write_potcar(types='None'):
         else:
             elements[i] += "_%s" % types[i]
 
-        # If specified pseudopotential doesn't exist, try other variations.
+        # If specified pseudopotential doesn't exist, try other
+        # variations.
         if os.path.exists("/home/mashton/Potentials/POT_GGA_PAW_PBE/%s/POTCAR"\
                           % elements[i]):
             pass
@@ -266,7 +267,8 @@ def write_potcar(types='None'):
                             print "I give up looking for a pseudopotential for"\
                                   " %s. Do it yourself." % elements[i]
 
-    # Create paths, open files, and write files to POTCAR for each potential.
+    # Create paths, open files, and write files to POTCAR for each
+    # potential.
     for element in elements:
         potentials.append("/home/mashton/Potentials/POT_GGA_PAW_PBE/%s/POTCAR"\
                           % element)
@@ -405,8 +407,8 @@ def multiply_poscar(poscar, dimensions):
         new_stoichiometries.append(str(int(stoichiometries[i])\
             * int(multiply_factor)))
 
-    # Multiply 'a' vector by the first dimension, divide all atomic coordinates 
-    # by the first dimension, then replicate the structure.
+    # Multiply 'a' vector by the first dimension, divide all atomic
+    # coordinates by the first dimension, then replicate the structure.
     new_a_vector = []
     for i in range(3):
         new_a_vector.append(str(float(a_vector[i]) * float(dimensions[0])))
@@ -429,8 +431,8 @@ def multiply_poscar(poscar, dimensions):
         new_atomic_coordinates.append(new_element_coordinates)
 
 
-    # Multiply 'b' vector by the second dimension, divide all atomic coordinates 
-    # by the first dimension, then replicate the structure.
+    # Multiply 'b' vector by the second dimension, divide all atomic
+    # coordinates by the first dimension, then replicate the structure.
     new_b_vector = []
     for i in range(3):
         new_b_vector.append(str(float(b_vector[i]) * float(dimensions[1])))
@@ -453,8 +455,8 @@ def multiply_poscar(poscar, dimensions):
         newer_atomic_coordinates.append(new_element_coordinates)
 
 
-    # Multiply 'c' vector by the third dimension, divide all atomic coordinates by 
-    # the third dimension, then replicate the structure.
+    # Multiply 'c' vector by the third dimension, divide all atomic
+    # coordinates by the third dimension, then replicate the structure.
     new_c_vector = []
     for i in range(3):
         new_c_vector.append(str(float(c_vector[i]) * float(dimensions[2])))
@@ -533,11 +535,12 @@ def get_u_values(atoms):
     return_dict = {}
 
     u_values = {"Ti": "4.4", "V": "2.7", "Cr": "3.5", "Mn": "4.0", "Fe": "4.6",
-                "Co": "5.0", "Ni": "5.1", "Cu": "4.0", "Zn": "7.5", "Ga": "3.9",
-                "Nb": "2.1", "Mo": "2.4", "Tc": "2.7", "Ru": "3.0", "Rh": "3.3",
-                "Pd": "3.6", "Cd": "2.1", "In": "1.9", "Ta": "2.0", "W": "2.2",
-                "Re": "2.4", "Os": "2.6", "Ir": "2.8", "Pt": "3.0", "La": "7.5",
-                "Ce": "6.3", "Pr": "5.5", "Gd": "6.0", "Nd": "6.2", "Sm": "6.4",
+                "Co": "5.0", "Ni": "5.1", "Cu": "4.0", "Zn": "7.5",
+                "Ga": "3.9", "Nb": "2.1", "Mo": "2.4", "Tc": "2.7",
+                "Ru": "3.0", "Rh": "3.3", "Pd": "3.6", "Cd": "2.1",
+                "In": "1.9", "Ta": "2.0", "W": "2.2", "Re": "2.4", "Os": "2.6",
+                "Ir": "2.8", "Pt": "3.0", "La": "7.5", "Ce": "6.3",
+                "Pr": "5.5", "Gd": "6.0", "Nd": "6.2", "Sm": "6.4",
                 "Eu": "5.4", "Tm": "6.0", "Yb": "6.3", "Lu": "3.8", "U": "4.0"}
     d_elements = ["Sc", "Ti", "V", "Cr", "Mn", "Fe", "Co", "Ni", "Cu", "Zn",
                   "Ga", "Nb", "Y", "Zr", "Nb", "Mo", "Tc", "Ru", "Rh", "Pd",
@@ -618,8 +621,8 @@ def get_spacing(filename='POSCAR', cutoff=0.95):
 
 def get_starting_magmoms():
     """
-    Returns the 'MAGMOM:'' setting based on the POSCAR as a string object.
-    Transition metals get 6.0, all others get 0.5.
+    Returns the 'MAGMOM:'' setting based on the POSCAR as a string
+    object. Transition metals get 6.0, all others get 0.5.
     """
     poscar_lines = open('POSCAR').readlines()
     elements = [Element(elt) for elt in poscar_lines[5].split()]
